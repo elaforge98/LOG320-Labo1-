@@ -1,3 +1,5 @@
+import java.util.ArrayList;
+
 public interface StrategieCompression {
-    void compresser();
+    ArrayList<Integer> compresser(String text);
 }
