@@ -1,3 +1,5 @@
+import java.util.ArrayList;
+
 public interface StrategieDecompression {
-    void decompresser();
+    String decompresser(ArrayList<Integer> compressed);
 }

@@ -1,6 +1,8 @@
+import java.util.ArrayList;
+
 public class CompressionHuffman implements StrategieCompression{
     @Override
-    public void compresser() {
-
+    public ArrayList<Integer> compresser(String text) {
+        return null;
     }
 }
