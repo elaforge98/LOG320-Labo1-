@@ -6,12 +6,13 @@ import java.util.Map;
 public class CompressionLZW implements StrategieCompression{
     private Map<String, Integer> dict = new HashMap<String, Integer>();
     int dictSize = 256;
-    private static final int maxDictSize = 4096;       // grandeur max du dictionnaire et nombre de codes
-    private static final int L = 12;         // longueur des codes
+    private static final int L = 18;         // longueur des codes
+    private static final int maxDictSize = (int) Math.pow(2, L);   ;       // grandeur max du dictionnaire et nombre de codes
+
 
     public CompressionLZW() {
         for (int i = 0; i < dictSize; i++) {
-            dict.put((char)i + "", i);
+            dict.put(toThreeDigStr(i), i);
         }
     }
 
@@ -22,8 +23,8 @@ public class CompressionLZW implements StrategieCompression{
         try (FileInputStream input = new FileInputStream(file)) {
 
             int singleCharInt;
-            char c;
             StringBuilder compressed = new StringBuilder();
+
             BitOutputStream output = null;
 
             try {
@@ -34,11 +35,12 @@ public class CompressionLZW implements StrategieCompression{
 
                 while((singleCharInt = input.read()) != -1) {
 
-                    c = (char) singleCharInt;
+                    String c = toThreeDigStr(singleCharInt);
+
                     if (dict.containsKey(s + c )) {
                         s = s + c;
                     } else {
-                        compressed.append(String.format("%"+L+"s",Integer.toBinaryString(dict.get(s))).replaceAll(" ", "0"));
+                        compressed.append(toLDigBinaryStr(dict.get(s)));
                         if(dictSize < maxDictSize){
                             dict.put(s + c, dictSize ++);
                         }
@@ -46,7 +48,7 @@ public class CompressionLZW implements StrategieCompression{
                     }
                 }
 
-                compressed.append(String.format("%"+L+"s",Integer.toBinaryString(dict.get(s))).replaceAll(" ", "0"));
+                compressed.append(toLDigBinaryStr(dict.get(s)));
 
                 String compressedStr = compressed.toString();
 
@@ -74,22 +76,12 @@ public class CompressionLZW implements StrategieCompression{
 
     }
 
+    public static String toThreeDigStr(int i){
+        return String.format("%3s", i).replaceAll(" ", "0");
+    }
 
-
-    @Override
-    public ArrayList<Integer> compresser(String text) {
-        ArrayList<Integer> compressed = new ArrayList<Integer>();
-        String s = "";
-        for (char c : text.toCharArray()) {
-            if (dict.containsKey(s + c )) {
-                s = s + c;
-            } else {
-                compressed.add(dict.get(s));
-                dict.put(s, dictSize ++);
-                s = c + "";
-            }
-        }
-        return compressed;
+    private String toLDigBinaryStr(int i){
+        return String.format("%"+L+"s",Integer.toBinaryString(i)).replaceAll(" ", "0");
     }
 
 
