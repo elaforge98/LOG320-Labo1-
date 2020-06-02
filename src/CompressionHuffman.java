@@ -13,7 +13,7 @@ public class CompressionHuffman implements StrategieCompression{
         Node tree = buildTree(charFreqs);
 
         System.out.println("SYMBOL\tWEIGHT\tHUFFMAN CODE");
-        writeTree(tree, new StringBuffer());
+        generatePath(tree, new StringBuffer());
 
         return null;
     }
@@ -56,17 +56,17 @@ public class CompressionHuffman implements StrategieCompression{
         return tree.poll();
     }
 
-    public void writeTree(Node tree, StringBuffer prefix) {
+    public void generatePath(Node tree, StringBuffer path) {
         if (tree.isLeaf()) {
-            System.out.println(tree.value + "\t" + tree.freq + "\t" + prefix);
+            System.out.println(tree.value + "\t" + tree.freq + "\t" + path);
         } else {
-            prefix.append('0');
-            writeTree(tree.left, prefix);
-            prefix.deleteCharAt(prefix.length() -1);
+            path.append('0');
+            generatePath(tree.left, path);
+            path.deleteCharAt(path.length() -1);
 
-            prefix.append('1');
-            writeTree(tree.right, prefix);
-            prefix.deleteCharAt(prefix.length() -1);
+            path.append('1');
+            generatePath(tree.right, path);
+            path.deleteCharAt(path.length() -1);
         }
     }
 
