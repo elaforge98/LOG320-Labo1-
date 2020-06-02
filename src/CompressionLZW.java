@@ -1,9 +1,8 @@
 import java.io.*;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-public class CompressionLZW implements StrategieCompression{
+public class CompressionLZW {
     private Map<String, Integer> dict = new HashMap<String, Integer>();
     int dictSize = 256;
     private static final int L = 18;         // longueur des codes

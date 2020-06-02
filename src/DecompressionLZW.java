@@ -5,7 +5,7 @@ import java.io.FileOutputStream;
 import java.util.List;
 import java.util.Map;
 
-public class DecompressionLZW implements StrategieDecompression {
+public class DecompressionLZW {
     private Map<Integer, String> dict = new HashMap<Integer, String>();
     int dictSize = 256;
     private static final int L = 18;
