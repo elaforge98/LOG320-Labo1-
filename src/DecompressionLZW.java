@@ -98,7 +98,7 @@ public class DecompressionLZW implements StrategieDecompression {
         }
     }
 
-    
+
     public static List<String> splitEqually(String texte, int size) {
         List<String> splits = new ArrayList<String>((texte.length() + size - 1) / size);
 
