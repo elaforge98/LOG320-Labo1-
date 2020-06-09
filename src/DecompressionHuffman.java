@@ -1,8 +1,9 @@
 import java.util.ArrayList;
 
-public class DecompressionHuffman implements StrategieDecompression{
+public class DecompressionHuffman {
 
-    @Override
+    public void decompresser(String originalFileName, String decompressedFileName){}
+
     public String decompresser(ArrayList<Integer> compressed) {
         return null;
     }

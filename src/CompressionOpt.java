@@ -1,15 +1,19 @@
-import java.io.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-public class CompressionLZW {
+public class CompressionOpt {
+
     private Map<String, Integer> dict = new HashMap<String, Integer>();
     int dictSize = 256;
-    private static final int L = 18;         // longueur des codes
-    private static final int maxDictSize = (int) Math.pow(2, L);   ;       // grandeur max du dictionnaire et nombre de codes
+    private int L = 18;         // longueur des codes
+    private int maxDictSize = (int) Math.pow(2, L);   ;       // grandeur max du dictionnaire et nombre de codes
 
+    //PAS ENCORE FAIT
 
-    public CompressionLZW() {
+    public CompressionOpt() {
         for (int i = 0; i < dictSize; i++) {
             dict.put(toThreeDigStr(i), i);
         }
@@ -51,6 +55,8 @@ public class CompressionLZW {
 
                 String compressedStr = compressed.toString();
 
+                 //calculate loss/gain depending on dict size if unlimited maxdictsize!!!
+
                 for (int i = 0; i < compressedStr.length(); i++){
                     if(compressedStr.charAt(i) == '1'){
                         output.writeBit(1);
@@ -83,25 +89,4 @@ public class CompressionLZW {
         return String.format("%"+L+"s",Integer.toBinaryString(i)).replaceAll(" ", "0");
     }
 
-
-    /** PAS UTILISÉE POUR L'INSTANT
-     * ---Méthode tirée de https://funnelgarden.com/java_read_file/
-     * Use Streams when you are dealing with raw data
-     * @param data
-     */
-    private static void writeUsingOutputStream(String pathname, String data) {
-        OutputStream os = null;
-        try {
-            os = new FileOutputStream(new File(pathname));
-            os.write(data.getBytes(), 0, data.length());
-        } catch (IOException e) {
-            e.printStackTrace();
-        }finally{
-            try {
-                os.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-    }
 }
