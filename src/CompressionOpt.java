@@ -14,7 +14,6 @@ public class CompressionOpt {
     private int L;         // longueur des codes
     private int maxDictSize = (int) Math.pow(2, L);   ;       // grandeur max du dictionnaire et nombre de codes
 
-    //PAS ENCORE FAIT
 
     public CompressionOpt() {
         for (int i = 0; i < dictSize; i++) {
@@ -48,6 +47,9 @@ public class CompressionOpt {
                         s = s + c;
                     } else {
                         int numBits = Integer.toBinaryString(dict.get(s)).length();
+                        if(numBits < 8){
+                            numBits = 8;
+                        }
                         if (freq.containsKey(numBits)){
                             freq.replace(numBits, freq.get(numBits) + 1);
                         }
@@ -59,9 +61,14 @@ public class CompressionOpt {
                     }
                 }
 
+                for (Map.Entry<Integer, Integer> entry : freq.entrySet()) {
+                		    System.out.println(entry.getKey() + " = " + entry.getValue());
+               	}
+
                 
                  //calculate loss/gain depending on dict size if unlimited maxdictsize!!!
 
+                /*
                 for (int i = 0; i < compressedStr.length(); i++){
                     if(compressedStr.charAt(i) == '1'){
                         output.writeBit(1);
@@ -71,6 +78,8 @@ public class CompressionOpt {
                     }
                 }
 
+
+                 */
 
 
             } catch (IOException e) {

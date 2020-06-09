@@ -16,7 +16,7 @@
 import java.io.*;
 
 public class BitOutputStream {
-    private FileOutputStream output;
+    public FileOutputStream output;
     private int digits;     // a buffer used to build up next set of digits
     private int numDigits;  // how many digits are currently in the buffer
 
