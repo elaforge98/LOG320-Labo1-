@@ -9,10 +9,10 @@ public class Huffman {
         int singleCharInt;
         char c;
         File file = new File(originalFileName);
-        FileOutputStream output = null;
+        BitOutputStream output = null;
 
         try(BufferedInputStream input = new BufferedInputStream(new FileInputStream(file))){
-            output = new FileOutputStream(compressedFileName);
+            output = new BitOutputStream(compressedFileName);
             int[] charFreqs = new int[256];
 
             while((singleCharInt = input.read()) != -1){
@@ -23,19 +23,17 @@ public class Huffman {
 
             Node root = construireArbre(charFreqs);
             genererChemin(root, "");
-
             insererEntete(output, root);
-
 
             while((singleCharInt = in.read()) != -1){
                 String path = chemins[singleCharInt];
                 for (int i = 0; i < path.length(); i++){
 
                     if(path.charAt(i) == '1'){
-                        output.write(1);
+                        output.writeBit(1);
                     }
                     else{
-                        output.write(0);
+                        output.writeBit(0);
 
                     }
                 }
@@ -52,14 +50,14 @@ public class Huffman {
 
     public void decompresser(String originalFileName, String decompressedFileName) throws IOException {
         int singleCharInt;
-        char c;
-        FileInputStream input = new FileInputStream(originalFileName);
+        BitInputStream input = new BitInputStream(originalFileName);
         Node root = lireEntete(input);
         Node node = root;
-        genererChemin(root, "");
-        FileOutputStream output = new FileOutputStream(decompressedFileName);
 
-        while((singleCharInt = input.read()) != -1){
+        genererChemin(root, "");
+        BitOutputStream output = new BitOutputStream(decompressedFileName);
+
+        while((singleCharInt = input.readBit()) != -1){
 
             if(singleCharInt == 1){
                 node = node.right;
@@ -68,10 +66,15 @@ public class Huffman {
             }
 
             if(node.isLeaf()){
-                output.write(node.value);
-                node = root;
+                if(node.value == (char)256){
+                    return;
+                }else{
+                    output.output.write(node.value);
+                    node = root;
+                }
             }
         }
+        output.close();
     }
 
     private static class Node implements Comparable<Node> {
@@ -96,7 +99,7 @@ public class Huffman {
     }
 
     public Node construireArbre(int[] charFreq) {
-        PriorityQueue<Node> arbre = new PriorityQueue<Node>();
+        PriorityQueue<Node> arbre = new PriorityQueue<>();
 
         for (int i=0; i < charFreq.length; i++) {
             if (charFreq[i] > 0) {
@@ -109,6 +112,7 @@ public class Huffman {
 
             arbre.offer(new Node('\0', node1.freq + node2.freq, node1, node2));
         }
+//        arbre.add(new Node((char)256,0,null,null));
         return arbre.poll();
     }
 
@@ -121,26 +125,52 @@ public class Huffman {
         }
     }
 
-    public void insererEntete(FileOutputStream output, Node node) throws IOException {
+    public void insererEntete(BitOutputStream output, Node node) throws IOException {
         if(node.isLeaf()){
-            output.write(1);
-            output.write(node.value);
+            output.writeBit(1);
+            String bits = intToBits(node.value);
+            for(int i = 0; i < bits.length(); i++){
+                if(bits.charAt(i) == '1'){
+                    output.writeBit(1);
+                }
+                else{
+                    output.writeBit(0);
+
+                }
+            }
         }else{
-            output.write(0);
+            output.writeBit(0);
             insererEntete(output, node.left);
             insererEntete(output, node.right);
 
         }
     }
 
-    public Node lireEntete(FileInputStream input) throws IOException {
-        if(input.read() == 1){
-            return new Node ((char)input.read(), 0, null,null );
+    public Node lireEntete(BitInputStream input) throws IOException {
+        if(input.readBit() == 1){
+            char c = readChar(input);
+            return new Node (c, 0, null,null );
         }else{
             Node left = lireEntete(input);
             Node right = lireEntete(input);
             return new Node('\0', 0, left, right);
         }
+    }
+
+    public char readChar(BitInputStream input){
+        int numBits = 0;
+        int singleBit;
+        int code = 0;
+        while(numBits < 8){
+            singleBit = input.readBit();
+            code += singleBit << (8 - 1 - numBits);
+            numBits++;
+        }
+        return (char)code;
+    }
+
+    private String intToBits(int i){
+        return String.format("%"+8+"s",Integer.toBinaryString(i)).replaceAll(" ", "0");
     }
 
 }
