@@ -1,19 +1,19 @@
+import java.io.IOException;
 import java.sql.Timestamp;
 
 public class MainProgram {
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
 
         Timestamp timestamp = new Timestamp(System.currentTimeMillis());
         System.out.println("debut:" + timestamp);
 
         if(args[0].equals("-huff")){
+            Huffman huff = new Huffman();
             if (args[1].equals("-c")) {
-                CompressionHuffman huff = new CompressionHuffman();
                 huff.compresser(args[2], args[3]);
             }
             else if (args[1].equals("-d")){
-                DecompressionHuffman huff = new DecompressionHuffman();
                 huff.decompresser(args[2], args[3]);
             }
         }

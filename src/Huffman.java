@@ -14,14 +14,12 @@ public class Huffman {
         try(BufferedInputStream input = new BufferedInputStream(new FileInputStream(file))){
             output = new FileOutputStream(compressedFileName);
             int[] charFreqs = new int[256];
-            input.mark(0);
 
             while((singleCharInt = input.read()) != -1){
                 c = (char) singleCharInt;
                 charFreqs[c]++;
             }
-            input.reset();
-
+            BufferedInputStream in = new BufferedInputStream(new FileInputStream(file));
 
             Node root = buildTree(charFreqs);
             generatePath(root, "");
@@ -29,7 +27,7 @@ public class Huffman {
             writeHeader(output, root);
 
 
-            while((singleCharInt = input.read()) != -1){
+            while((singleCharInt = in.read()) != -1){
                 String path = paths[singleCharInt];
                 for (int i = 0; i < path.length(); i++){
 
