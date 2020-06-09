@@ -2,7 +2,7 @@ import java.io.*;
 import java.util.PriorityQueue;
 
 public class Huffman {
-    String[] paths = new String[256];
+    String[] chemins = new String[256];
 
     public void compresser(String originalFileName, String compressedFileName) throws IOException {
 
@@ -21,14 +21,14 @@ public class Huffman {
             }
             BufferedInputStream in = new BufferedInputStream(new FileInputStream(file));
 
-            Node root = buildTree(charFreqs);
-            generatePath(root, "");
+            Node root = construireArbre(charFreqs);
+            genererChemin(root, "");
 
-            writeHeader(output, root);
+            insererEntete(output, root);
 
 
             while((singleCharInt = in.read()) != -1){
-                String path = paths[singleCharInt];
+                String path = chemins[singleCharInt];
                 for (int i = 0; i < path.length(); i++){
 
                     if(path.charAt(i) == '1'){
@@ -54,9 +54,9 @@ public class Huffman {
         int singleCharInt;
         char c;
         FileInputStream input = new FileInputStream(originalFileName);
-        Node root = readHeader(input);
+        Node root = lireEntete(input);
         Node node = root;
-        generatePath(root, "");
+        genererChemin(root, "");
         FileOutputStream output = new FileOutputStream(decompressedFileName);
 
         while((singleCharInt = input.read()) != -1){
@@ -95,51 +95,50 @@ public class Huffman {
         }
     }
 
-    public Node buildTree(int[] charFreq) {
-        PriorityQueue<Node> tree = new PriorityQueue<Node>();
+    public Node construireArbre(int[] charFreq) {
+        PriorityQueue<Node> arbre = new PriorityQueue<Node>();
 
         for (int i=0; i < charFreq.length; i++) {
             if (charFreq[i] > 0) {
-                tree.offer(new Node((char) i,charFreq[i], null, null));
+                arbre.offer(new Node((char) i,charFreq[i], null, null));
             }
         }
-        while (tree.size() > 1) {
-            Node least1 = tree.poll();
-            Node least2 = tree.poll();
+        while (arbre.size() > 1) {
+            Node node1 = arbre.poll();
+            Node node2 = arbre.poll();
 
-            tree.offer(new Node('\0', least1.freq + least2.freq, least1, least2));
+            arbre.offer(new Node('\0', node1.freq + node2.freq, node1, node2));
         }
-        return tree.poll();
+        return arbre.poll();
     }
 
-    public void generatePath(Node currentNode, String path) {
+    public void genererChemin(Node currentNode, String chemin) {
         if (currentNode.isLeaf()) {
-            System.out.println(currentNode.value + "\t" + currentNode.freq + "\t" + path);
-            paths[currentNode.value] = path;
+            chemins[currentNode.value] = chemin;
         } else {
-            generatePath(currentNode.left, path + "0");
-            generatePath(currentNode.right, path + "1");
+            genererChemin(currentNode.left, chemin + "0");
+            genererChemin(currentNode.right, chemin + "1");
         }
     }
 
-    public void writeHeader(FileOutputStream output, Node node) throws IOException {
+    public void insererEntete(FileOutputStream output, Node node) throws IOException {
         if(node.isLeaf()){
             output.write(1);
             output.write(node.value);
         }else{
             output.write(0);
-            writeHeader(output, node.left);
-            writeHeader(output, node.right);
+            insererEntete(output, node.left);
+            insererEntete(output, node.right);
 
         }
     }
 
-    public Node readHeader(FileInputStream input) throws IOException {
+    public Node lireEntete(FileInputStream input) throws IOException {
         if(input.read() == 1){
             return new Node ((char)input.read(), 0, null,null );
         }else{
-            Node left = readHeader(input);
-            Node right = readHeader(input);
+            Node left = lireEntete(input);
+            Node right = lireEntete(input);
             return new Node('\0', 0, left, right);
         }
     }
