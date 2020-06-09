@@ -1,14 +1,17 @@
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
 public class CompressionOpt {
 
     private Map<String, Integer> dict = new HashMap<String, Integer>();
+    private Map<Integer, Integer> freq = new HashMap<Integer, Integer>();
+    private ArrayList<Integer> byteValues = new ArrayList<Integer>();
     int dictSize = 256;
-    private int L = 18;         // longueur des codes
+    private int L;         // longueur des codes
     private int maxDictSize = (int) Math.pow(2, L);   ;       // grandeur max du dictionnaire et nombre de codes
 
     //PAS ENCORE FAIT
@@ -26,7 +29,6 @@ public class CompressionOpt {
         try (FileInputStream input = new FileInputStream(file)) {
 
             int singleCharInt;
-            StringBuilder compressed = new StringBuilder();
 
             BitOutputStream output = null;
 
@@ -38,23 +40,26 @@ public class CompressionOpt {
 
                 while((singleCharInt = input.read()) != -1) {
 
+                    byteValues.add(singleCharInt);
+
                     String c = toThreeDigStr(singleCharInt);
 
                     if (dict.containsKey(s + c )) {
                         s = s + c;
                     } else {
-                        compressed.append(toLDigBinaryStr(dict.get(s)));
-                        if(dictSize < maxDictSize){
-                            dict.put(s + c, dictSize ++);
+                        int numBits = Integer.toBinaryString(dict.get(s)).length();
+                        if (freq.containsKey(numBits)){
+                            freq.replace(numBits, freq.get(numBits) + 1);
                         }
+                        else{
+                           freq.put(numBits, 1);
+                        }
+                        dict.put(s + c, dictSize ++);
                         s = c + "";
                     }
                 }
 
-                compressed.append(toLDigBinaryStr(dict.get(s)));
-
-                String compressedStr = compressed.toString();
-
+                
                  //calculate loss/gain depending on dict size if unlimited maxdictsize!!!
 
                 for (int i = 0; i < compressedStr.length(); i++){
