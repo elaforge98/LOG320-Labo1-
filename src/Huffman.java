@@ -66,9 +66,10 @@ public class Huffman {
             }
 
             if(node.isLeaf()){
-                if(node.value == (char)256){
-                    return;
-                }else{
+                if(node.value == '\0'){
+                    break;
+                }
+                else{
                     output.output.write(node.value);
                     node = root;
                 }
@@ -112,7 +113,12 @@ public class Huffman {
 
             arbre.offer(new Node('\0', node1.freq + node2.freq, node1, node2));
         }
-//        arbre.add(new Node((char)256,0,null,null));
+        arbre.offer(new Node('\0', 0, null, null));
+        Node node1 = arbre.poll();
+        Node node2 = arbre.poll();
+        arbre.offer(new Node('\0', node1.freq + node2.freq, node1, node2));
+
+//
         return arbre.poll();
     }
 
@@ -120,8 +126,8 @@ public class Huffman {
         if (currentNode.isLeaf()) {
             chemins[currentNode.value] = chemin;
         } else {
-            genererChemin(currentNode.left, chemin + "0");
-            genererChemin(currentNode.right, chemin + "1");
+            genererChemin(currentNode.left, chemin + "0"); //ch
+            genererChemin(currentNode.right, chemin + "1");//ch
         }
     }
 
