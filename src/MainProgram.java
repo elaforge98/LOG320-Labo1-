@@ -8,7 +8,6 @@ public class MainProgram {
         Timestamp timestamp = new Timestamp(System.currentTimeMillis());
         System.out.println("debut:" + timestamp);
 
-
         if(args.length > 0){
             if(args[0].equals("-huff")){
                 Huffman huff = new Huffman();
@@ -17,6 +16,9 @@ public class MainProgram {
                 }
                 else if (args[1].equals("-d")){
                     huff.decompresser(args[2], args[3]);
+                }
+                else{
+                    System.out.println("argument 1 invalide");
                 }
             }
             else if(args[0].equals("-lzw")){
@@ -28,23 +30,31 @@ public class MainProgram {
                     DecompressionLZW lzw = new DecompressionLZW();
                     lzw.decompresser(args[2], args[3]);
                 }
+                else{
+                    System.out.println("argument 1 invalide");
+                }
             }
-            else {
+            else if(args[0].equals("-opt")){
                 if (args[1].equals("-c")) {
-                    CompressionOpt opt = new CompressionOpt();
-                    opt.compresser(args[2], args[3]);
+                    CompressionOpt opto = new CompressionOpt();
+                    opto.compresser(args[2], args[3]);
 
                 } else if (args[1].equals("-d")) {
-                    DecompressionOpt opt = new DecompressionOpt();
-                    opt.decompresser(args[2], args[3]);
+                    DecompressionOpt optt = new DecompressionOpt();
+                    optt.decompresser(args[2], args[3]);
                 }
+                else{
+                    System.out.println("argument 1 invalide");
+                }
+            }
+            else{
+                System.out.println("argument 0 invalide");
             }
         }
 
 
         Timestamp timestamp2 = new Timestamp(System.currentTimeMillis());
         System.out.println("fin:" + timestamp2);
-
 
     }
 }

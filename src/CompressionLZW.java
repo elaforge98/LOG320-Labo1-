@@ -82,26 +82,4 @@ public class CompressionLZW {
     private String toLDigBinaryStr(int i){
         return String.format("%"+L+"s",Integer.toBinaryString(i)).replaceAll(" ", "0");
     }
-
-
-    /** PAS UTILISÉE POUR L'INSTANT
-     * ---Méthode tirée de https://funnelgarden.com/java_read_file/
-     * Use Streams when you are dealing with raw data
-     * @param data
-     */
-    private static void writeUsingOutputStream(String pathname, String data) {
-        OutputStream os = null;
-        try {
-            os = new FileOutputStream(new File(pathname));
-            os.write(data.getBytes(), 0, data.length());
-        } catch (IOException e) {
-            e.printStackTrace();
-        }finally{
-            try {
-                os.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-    }
 }

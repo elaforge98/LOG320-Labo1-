@@ -7,17 +7,22 @@ import java.util.Map;
 
 public class CompressionOpt {
 
-    private Map<String, Integer> dict = new HashMap<String, Integer>();
+    private Map<String, Integer> dictTest = new HashMap<String, Integer>();
+    private Map<String, Integer> dictOpt = new HashMap<String, Integer>();
     private Map<Integer, Integer> freq = new HashMap<Integer, Integer>();
     private ArrayList<Integer> byteValues = new ArrayList<Integer>();
-    int dictSize = 256;
+    int dictTestSize = 256;
+    int dictOptSize = 256;
     private int L;         // longueur des codes
-    private int maxDictSize = (int) Math.pow(2, L);   ;       // grandeur max du dictionnaire et nombre de codes
+    private int maxDictSize ;   ;       // grandeur max du dictionnaire et nombre de codes
 
 
     public CompressionOpt() {
-        for (int i = 0; i < dictSize; i++) {
-            dict.put(toThreeDigStr(i), i);
+        for (int i = 0; i < dictTestSize; i++) {
+            dictTest.put(toThreeDigStr(i), i);
+        }
+        for (int i = 0; i < dictOptSize; i++) {
+            dictOpt.put(toThreeDigStr(i), i);
         }
     }
 
@@ -43,10 +48,10 @@ public class CompressionOpt {
 
                     String c = toThreeDigStr(singleCharInt);
 
-                    if (dict.containsKey(s + c )) {
+                    if (dictTest.containsKey(s + c )) {
                         s = s + c;
                     } else {
-                        int numBits = Integer.toBinaryString(dict.get(s)).length();
+                        int numBits = Integer.toBinaryString(dictTest.get(s)).length();
                         if(numBits < 8){
                             numBits = 8;
                         }
@@ -56,19 +61,68 @@ public class CompressionOpt {
                         else{
                            freq.put(numBits, 1);
                         }
-                        dict.put(s + c, dictSize ++);
+                        dictTest.put(s + c, dictTestSize ++);
                         s = c + "";
                     }
                 }
 
+                //trouver Max
+                int freqMax = 0, freqMax2 = 0, freqMaxKey = 0, freqMax2Key = 0;
                 for (Map.Entry<Integer, Integer> entry : freq.entrySet()) {
-                		    System.out.println(entry.getKey() + " = " + entry.getValue());
+
+                		    int freqCode = entry.getValue();
+                		    int freqCodeKey = entry.getKey();
+                            System.out.println(freqCodeKey + " nombre de codes: " + freqCode);
+                		    if(freqCode > freqMax){
+                		        freqMax2 = freqMax;
+                                freqMax2Key = freqMaxKey;
+                		        freqMax = freqCode;
+                		        freqMaxKey = freqCodeKey;
+                            }
+                		    else if(freqCode > freqMax2){
+                		        freqMax2 = freqCode;
+                                freqMax2Key = freqCodeKey;
+                            }
                	}
 
-                
-                 //calculate loss/gain depending on dict size if unlimited maxdictsize!!!
+                if(freqMax2Key > freqMaxKey){
+                    L = freqMaxKey + 1;
+                }
+                else{
+                    L = freqMaxKey;
+                }
 
-                /*
+                System.out.println("L comp: " + L);
+
+                maxDictSize = (int) Math.pow(2, L);
+
+                StringBuilder compressed = new StringBuilder();
+
+                //sortir longueur de codes
+                compressed.append(to8DigBinaryStr(L));
+
+                s = "";
+
+                for( int byteVal : byteValues) {
+
+                    String c = toThreeDigStr(byteVal);
+
+                    if (dictOpt.containsKey(s + c )) {
+                        s = s + c;
+                    } else {
+                        compressed.append(toLDigBinaryStr(dictOpt.get(s)));
+                        if(dictOptSize < maxDictSize){
+                            dictOpt.put(s + c, dictOptSize ++);
+                        }
+                        s = c + "";
+                    }
+                }
+                compressed.append(toLDigBinaryStr(dictOpt.get(s)));
+
+                String compressedStr = compressed.toString();
+
+
+                //ecrire codes
                 for (int i = 0; i < compressedStr.length(); i++){
                     if(compressedStr.charAt(i) == '1'){
                         output.writeBit(1);
@@ -79,13 +133,7 @@ public class CompressionOpt {
                 }
 
 
-                 */
-
-
-            } catch (IOException e) {
-                e.printStackTrace();
-
-            }finally{
+            } finally{
                 output.close();
             }
 
@@ -101,6 +149,10 @@ public class CompressionOpt {
 
     private String toLDigBinaryStr(int i){
         return String.format("%"+L+"s",Integer.toBinaryString(i)).replaceAll(" ", "0");
+    }
+
+    private String to8DigBinaryStr(int i){
+        return String.format("%8s",Integer.toBinaryString(i)).replaceAll(" ", "0");
     }
 
 }
