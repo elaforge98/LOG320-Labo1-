@@ -57,34 +57,36 @@ public class DecompressionLZW {
                 }
 
 
-                String seq = "";
+                if (!endFile){
+                    String seq = "";
 
-                if(dict.containsKey(code)){
-                    seq = dict.get(code);
-                }
-                else{
-                    seq = s + s.substring(0,3);
-                }
-
-                if(seq.length() > 3){
-
-                    byteListStr = splitEqually(seq, 3);
-
-                    for (String bs : byteListStr){
-                         bytesInt.add(Integer.parseInt(bs));
+                    if(dict.containsKey(code)){
+                        seq = dict.get(code);
                     }
-                }
-                else{
-                    bytesInt.add(Integer.parseInt(seq));
-                }
+                    else{
+                        seq = s + s.substring(0,3);
+                    }
 
+                    if(seq.length() > 3){
 
-                if (!s.isEmpty() && dictSize < maxDictSize) {
-                    dict.put(dictSize++, s + seq.substring(0,3));
+                        byteListStr = splitEqually(seq, 3);
+
+                        for (String bs : byteListStr){
+                            bytesInt.add(Integer.parseInt(bs));
+                        }
+                    }
+                    else{
+                        bytesInt.add(Integer.parseInt(seq));
+                    }
+
+                    if (!s.isEmpty() && dictSize < maxDictSize) {
+                        dict.put(dictSize++, s + seq.substring(0,3));
+                    }
+                    s = seq;
                 }
-                s = seq;
-
             }
+
+            input.close();
 
 
             for(int i : bytesInt){

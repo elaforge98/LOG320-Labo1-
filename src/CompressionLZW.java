@@ -47,6 +47,7 @@ public class CompressionLZW {
                     }
                 }
 
+                input.close();
                 compressed.append(toLDigBinaryStr(dict.get(s)));
 
                 String compressedStr = compressed.toString();
@@ -59,6 +60,7 @@ public class CompressionLZW {
                         output.writeBit(0);
                     }
                 }
+
 
 
 
