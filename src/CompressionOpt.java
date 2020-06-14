@@ -14,7 +14,7 @@ public class CompressionOpt {
     int dictTestSize = 256;
     int dictOptSize = 256;
     private int L;         // longueur des codes
-    private int maxDictSize ;   ;       // grandeur max du dictionnaire et nombre de codes
+    private int maxDictSize;        // grandeur max du dictionnaire et nombre de codes
 
 
     public CompressionOpt() {
@@ -69,7 +69,6 @@ public class CompressionOpt {
                 //trouver Max
                 int freqMax = 0, freqMax2 = 0, freqMaxKey = 0, freqMax2Key = 0;
                 for (Map.Entry<Integer, Integer> entry : freq.entrySet()) {
-
                 		    int freqCode = entry.getValue();
                 		    int freqCodeKey = entry.getKey();
                             System.out.println(freqCodeKey + " nombre de codes: " + freqCode);
@@ -91,8 +90,6 @@ public class CompressionOpt {
                 else{
                     L = freqMaxKey;
                 }
-
-                System.out.println("L comp: " + L);
 
                 maxDictSize = (int) Math.pow(2, L);
 
